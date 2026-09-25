@@ -8,7 +8,7 @@ repository, and most are live: press the play button on a diagram to watch a
 token move through the process.
 
 ```{bpmn} diagrams/publishing.bpmn
-:height: 300px
+:height: 600px
 :caption: A content publishing process. Click the arrows at the gateway to choose a path.
 ```
 
