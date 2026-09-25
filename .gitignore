@@ -1,0 +1,9 @@
+/build/
+/result
+.venv/
+__pycache__/
+
+# Agent skills installed with `make skills`
+/.skills/
+/.agents/skills/plone-doc-style
+/.claude/skills/plone-doc-style

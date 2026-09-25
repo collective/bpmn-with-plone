@@ -1,0 +1,21 @@
+[project]
+name = "bpmn-with-plone"
+version = "0.1.0"
+description = "Documentation for BPMN with Plone"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "plone-sphinx-theme",
+    "myst-parser",
+    "sphinx-copybutton",
+    "sphinx-design",
+]
+
+[dependency-groups]
+dev = [
+    "sphinx-autobuild",
+]
+
+[tool.uv]
+# Documentation-only project: nothing to build or install.
+package = false
