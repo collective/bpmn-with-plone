@@ -1,0 +1,3 @@
+{
+    "bpmnModeler.engineRestUrl": "http://localhost:8800/engine-rest"
+}
