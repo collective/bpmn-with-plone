@@ -1,17 +1,19 @@
-# Playground for BPMN with Plone: Operaton, an ephemeral Plone site generated
-# with cookieplone (collective.webhook as its only add-on), a proxy in front of
-# Plone, and an operaton-tasks worker.
+# Playground for BPMN with Plone: Operaton and an ephemeral Plone site generated
+# with cookieplone (collective.webhook as its only add-on), behind one proxy.
 #
 #   make install    build the devenv shell, generate the Plone project,
 #                   install it and create the Plone site
-#   make start      start everything in the background (devenv up -d)
+#   make start      start Operaton, Plone and the proxy in the background
 #   make attach     follow process status and logs (Ctrl-C leaves them running)
-#   make stop       stop everything
+#   make tasks      run the operaton-tasks worker from tasks/ in the foreground
+#   make stop       stop the services
 #   make shell      enter the devenv shell
 #
-# Plone is at http://localhost:8000 (login admin / admin), Cockpit at
-# http://localhost:8800/operaton/app/cockpit/. In Codespaces, use the forwarded
-# ports 8000 and 8800. To start from scratch: make clean install
+# The proxy is at http://localhost:8000 (in Codespaces, the forwarded port
+# 8000): Plone at / (login admin / admin), and Operaton at /operaton, e.g.
+# Cockpit at /operaton/app/cockpit/ (login demo / demo). Behind it, Plone is at
+# localhost:8080 and Operaton at localhost:8800. To start from scratch:
+# make clean install
 #
 # The plone-* targets need the devenv shell (uv and git) and are run by the
 # targets above; project name, package name and feature flags live in
@@ -42,15 +44,19 @@ install: ## Build the devenv shell and install Plone with its site
 	devenv shell -- $(MAKE) plone-install
 
 .PHONY: start
-start: ## Start Operaton, Plone, the proxy and the task worker
+start: ## Start Operaton, Plone and the proxy in the background
 	devenv up -d
 
 .PHONY: attach
 attach: ## Follow process status and logs
 	devenv processes attach
 
+.PHONY: tasks
+tasks: ## Run the operaton-tasks worker (Ctrl-C to stop)
+	devenv shell -- operaton-tasks serve tasks/tasks.py
+
 .PHONY: stop
-stop: ## Stop everything started with make start
+stop: ## Stop the services
 	devenv processes down
 
 .PHONY: shell

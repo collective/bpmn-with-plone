@@ -4,18 +4,15 @@
   "overrideCommand": false,
   "updateContentCommand": "make -C backend install",
   "postStartCommand": "make -C backend start",
-  "forwardPorts": [8000, 8080, 8800],
+  "forwardPorts": [8000],
   "portsAttributes": {
     "8000": {
-      "label": "plone",
+      "label": "plone, operaton at /operaton",
       "onAutoForward": "openBrowser"
-    },
-    "8080": {
-      "label": "plone backend"
-    },
-    "8800": {
-      "label": "operaton"
     }
+  },
+  "otherPortsAttributes": {
+    "onAutoForward": "ignore"
   },
   "customizations": {
     "vscode": {
