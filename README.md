@@ -8,6 +8,11 @@ BPMN diagrams are embedded with the in-repository Sphinx extension
 files with [bpmn-to-image](https://github.com/datakurre/bpmn-to-image) — as a
 live token simulation, or as static/animated images.
 
+The documentation accompanies a [playground](#playground), which you can open
+in [GitHub Codespaces](https://codespaces.new/collective/bpmn-with-plone).
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/collective/bpmn-with-plone)
+
 ## Development
 
 Everything comes from the Nix flake. In `nix develop` the usual Sphinx
@@ -41,9 +46,7 @@ run `uv lock` inside `nix develop`.
 
 ## Playground
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/datakurre/bpmn-with-plone)
-
-The repository opens in [GitHub Codespaces](https://codespaces.new/datakurre/bpmn-with-plone)
+The repository opens in [GitHub Codespaces](https://codespaces.new/collective/bpmn-with-plone)
 with a playground for trying BPMN with Plone. The devcontainer runs
 [devenv](https://devenv.sh/) from [`backend/`](backend), which starts:
 
