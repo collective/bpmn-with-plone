@@ -1,0 +1,11 @@
+{
+  "title": "blicca",
+  "project_slug": "blicca",
+  "python_package_name": "blicca",
+  "description": "Plone backend with collective.webhook",
+  "feature_headless": false,
+  "initialize_documentation": false,
+  "devops_cache": false,
+  "devops_ansible": false,
+  "devops_gha_deploy": false
+}
