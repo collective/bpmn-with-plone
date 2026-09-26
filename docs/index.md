@@ -14,7 +14,7 @@ This documentation accompanies a playground, which you can open in [GitHub Codes
 ## States and Activities
 
 **Plone workflows describe a content object's state** and the transitions available from that state.
-**BPMN describes the work performed over time** by modeling the activities and sequence of a business process.
+**BPMN describes the work performed over time** by mode the activities and sequence of a business process.
 Plone focuses on an individual document; BPMN models a process that can coordinate work across people and systems.
 **They address different concerns and can complement each other.**
 
@@ -43,7 +43,16 @@ State diagram of Plone’s simple publication workflow, showing its three states
 ````
 `````
 
-- Explain why BPMN should run only in an external engine.
+## Collaboration between BPMN and Plone
+
+For users, Plone is a tool to help them to complete their work. Activity-based workflow like the ones defined with BPMN focus on users and their work. Users may *Create drafts and submit them* for publication, and *Review* them. Eventually the process completes, but Plone continues to manage the state of the resulting artifact, to be there for future editorial processes when required.
+
+```{bpmn} diagrams/publishing.bpmn
+:mode: simulator
+:alt: BPMN publication process with author and reviewer lanes, draft creation, review, and message flows to Plone CMS
+:width: 100%
+:caption: Try the token simulator: start a simulation, click the start event, then click enabled activities and sequence flows to advance the token through the process. Reset the simulation to try again.
+```
 
 ## Contents
 
