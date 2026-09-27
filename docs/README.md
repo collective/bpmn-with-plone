@@ -44,5 +44,6 @@ them, run `uv lock` inside `nix develop`.
 ## Publishing
 
 [`.github/workflows/docs.yml`](../.github/workflows/docs.yml) builds the site
-with Nix on every push and pull request, and deploys `main` to GitHub Pages (set *Settings → Pages → Source* to
-*GitHub Actions* once).
+with Nix on every push and pull request, and deploys `main` to GitHub Pages, at
+<https://collective.github.io/bpmn-with-plone> (set
+*Settings → Pages → Source* to *GitHub Actions* once).

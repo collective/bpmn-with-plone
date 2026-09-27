@@ -68,7 +68,7 @@ in
     package = devenv-module-operaton.packages.${pkgs.stdenv.hostPlatform.system}.default;
   };
 
-  # Reachable only through the proxy (and the workers) at localhost.
+  # Reachable only through the proxy (and a worker, if you run one) at localhost.
   processes.operaton.env.SERVER_ADDRESS = "127.0.0.1";
 
   processes.plone = {
@@ -96,9 +96,10 @@ in
   # Where operaton-tasks finds the engine. Its default is port 8080 (Plone).
   env.ENGINE_REST_BASE_URL = "http://localhost:${toString operatonPort}/engine-rest";
 
-  # Runs the operaton-tasks worker from tasks/, with its own virtualenv (the
-  # shell's UV_PROJECT_ENVIRONMENT is Plone's), e.g.
-  #   operaton-tasks serve tasks/tasks.py
+  # The operaton-tasks command, for trying out the worker in tasks/. It is not
+  # a service: start it by hand (`make tasks`, or in the shell
+  # `operaton-tasks serve tasks/tasks.py`). It runs from its own virtualenv,
+  # since the shell's UV_PROJECT_ENVIRONMENT is Plone's.
   scripts.operaton-tasks.exec = ''
     export UV_PROJECT_ENVIRONMENT=${config.devenv.root}/tasks/.venv
     export LOG_LEVEL="''${LOG_LEVEL:-INFO}"

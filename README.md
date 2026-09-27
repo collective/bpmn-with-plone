@@ -1,8 +1,9 @@
 # BPMN with Plone
 
-Documentation on using BPMN 2.0 business process models with Plone, with a
-playground to try it out: [Operaton](https://operaton.org/) as the process
-engine and a [Plone](https://plone.org/) site, running in
+[Documentation](https://collective.github.io/bpmn-with-plone)
+on using BPMN 2.0 business process models with Plone, with a playground to try
+it out: [Operaton](https://operaton.org/) as the process engine and a
+[Plone](https://plone.org/) site, running in
 [GitHub Codespaces](https://codespaces.new/collective/bpmn-with-plone).
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/collective/bpmn-with-plone)
@@ -33,17 +34,20 @@ engine and a [Plone](https://plone.org/) site, running in
      -d '{"messageName": "plone"}' http://localhost:8800/engine-rest/message
    ```
 
-4. Run the external task worker, to serve service tasks from
-   [`tasks/tasks.py`](tasks/tasks.py). It stays in the
-   foreground; stop it with Ctrl-C:
+4. Try an external task worker. It is not one of the services: it is only
+   in the environment, to be started by hand when you want it. It serves
+   the handlers in [`tasks/tasks.py`](tasks/tasks.py) to Operaton, stays in
+   the foreground, and stops with Ctrl-C:
 
    ```sh
    make tasks
    ```
 
-   The environment points it at Operaton with `ENGINE_REST_BASE_URL`, so the
-   [operaton-tasks](https://pypi.org/project/operaton-tasks/) command also
-   works as `operaton-tasks serve tasks/tasks.py` inside `make shell`.
+   The environment points the
+   [operaton-tasks](https://pypi.org/project/operaton-tasks/) command at
+   Operaton with `ENGINE_REST_BASE_URL`, so `operaton-tasks serve tasks/tasks.py`
+   works the same in `make shell`. While it runs, it also answers a health
+   check at `http://127.0.0.1:8081/healthz`; that port is not forwarded.
 
 The Operaton user is created with a fresh database only, so the `demo` login
 does not appear in a database that already has another one.
@@ -59,15 +63,14 @@ Only port 8000 is forwarded. A proxy there serves Plone at `/` and Operaton at
 | 8000 | Proxy ([Caddy](https://caddyserver.com/)) | the only forwarded port |
 | 8080 | Plone | `http://localhost:8080/Plone` |
 | 8800 | Operaton | Engine REST at `http://localhost:8800/engine-rest` |
-| 8081 | Worker health check | only while the worker runs, at `/healthz` |
 
 Plone is generated with [cookieplone](https://github.com/plone/cookieplone),
 with [collective.webhook](https://pypi.org/project/collective.webhook/) as its
 only add-on. It is ephemeral and git-ignored (`site/`); change its
 name or feature flags in
 [`cookieplone-answers.json`](cookieplone-answers.json), then run
-`make clean install`. The services are managed with
-[devenv](https://devenv.sh/), configured in [`devenv.nix`](devenv.nix).
+`make clean install`. Operaton, Plone and the proxy are the services, managed
+with [devenv](https://devenv.sh/) and configured in [`devenv.nix`](devenv.nix).
 
 ### Managing the services
 
@@ -78,13 +81,16 @@ only in Codespaces:
 make install     # build the environment, generate and install Plone (once)
 make start       # start Operaton, Plone and the proxy in the background
 make attach      # follow status and logs of the services (Ctrl-C leaves them running)
-make tasks       # run the operaton-tasks worker
 make stop        # stop the services
 make clean       # remove the generated Plone project and local state
 ```
 
+The operaton-tasks worker is not started with them; run `make tasks` yourself,
+as in the getting started steps.
+
 ## Documentation
 
-The documentation on using BPMN with Plone lives in [`docs/`](docs), as Sphinx
-sources in [`docs/src`](docs/src). See [`docs/README.md`](docs/README.md) for
-how to build and preview it.
+The documentation on using BPMN with Plone is published at
+<https://collective.github.io/bpmn-with-plone>. Its Sphinx sources are in
+[`docs/src`](docs/src); see [`docs/README.md`](docs/README.md) for how to build
+and preview it.

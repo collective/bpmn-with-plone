@@ -5,7 +5,8 @@
 #                   install it and create the Plone site
 #   make start      start Operaton, Plone and the proxy in the background
 #   make attach     follow process status and logs (Ctrl-C leaves them running)
-#   make tasks      run the operaton-tasks worker from tasks/ in the foreground
+#   make tasks      try the operaton-tasks worker from tasks/ (not a service;
+#                   runs in the foreground)
 #   make stop       stop the services
 #   make shell      enter the devenv shell
 #
@@ -52,7 +53,7 @@ attach: ## Follow process status and logs
 	devenv processes attach
 
 .PHONY: tasks
-tasks: ## Run the operaton-tasks worker (Ctrl-C to stop)
+tasks: ## Try the operaton-tasks worker by hand (Ctrl-C to stop)
 	devenv shell -- operaton-tasks serve tasks/tasks.py
 
 .PHONY: stop
@@ -99,7 +100,8 @@ port: addon
 		&& echo "    wsgi_listen: 'localhost:$(PORT)'" >> $(BACKEND)/instance.yaml; }
 
 # The project's backend-install also creates the Plone site (kept if it exists),
-# and the task worker's virtualenv is synced here too, to be ready for start.
+# and the task worker's virtualenv is synced here too, to be ready for
+# `make tasks`.
 .PHONY: plone-install
 plone-install: port
 	$(MAKE) -C $(PROJECT) backend-install
