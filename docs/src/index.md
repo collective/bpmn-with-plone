@@ -48,7 +48,7 @@ State diagram of Plone’s simple publication workflow, showing its three states
 For users, Plone is a tool to help them to complete their work. Activity-based workflow like the ones defined with BPMN focus on users and their work. Users may *Create drafts and submit them* for publication, and *Review* them. Eventually the process completes, but Plone continues to manage the state of the resulting artifact, to be there for future editorial processes when required.
 
 ```{bpmn} diagrams/publishing.bpmn
-:mode: simulator
+:mode: interactive
 :alt: BPMN publication process with author and reviewer lanes, draft creation, review, and message flows to Plone CMS
 :width: 100%
 :caption: Try the token simulator: start a simulation, click the start event, then click enabled activities and sequence flows to advance the token through the process. Reset the simulation to try again.
