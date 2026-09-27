@@ -78,7 +78,7 @@ Operaton is a community fork of Camunda 7 CE, a mature, Apache 2.0-licensed BPMN
 
 ## External Service Task pattern
 
-BPMN's basic activity types include **User Tasks**, **Script Tasks**, and **Service Tasks**. A User Task is usually a form, whose data is then submitted to the engine. A Script Task runs within the engine itself, useful for transforming data between activities. A Service Task describes work that is usually executed outside the engine.
+BPMN's basic activity types include {bpmn}`diagrams/user-task.bpmn` **User Tasks**, {bpmn}`diagrams/script-task.bpmn` **Script Tasks**, and {bpmn}`diagrams/service-task.bpmn` **Service Tasks**. A User Task is usually a form, whose data is then submitted to the engine. A Script Task runs within the engine itself, useful for transforming data between activities. A Service Task describes work that is usually executed outside the engine.
 
 ```{bpmn} diagrams/activity-task-types.bpmn
 :mode: svg
@@ -110,4 +110,6 @@ For example, with the Operaton engine:
 :maxdepth: 1
 
 patterns
+setup
+operaton
 ```

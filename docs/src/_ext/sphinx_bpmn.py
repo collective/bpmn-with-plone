@@ -273,7 +273,7 @@ def setup(app: Sphinx) -> dict:
     app.add_config_value("bpmn_to_image", shutil.which("bpmn-to-image") or "bpmn-to-image", "env")
     app.add_config_value("bpmn_default_mode", "interactive", "env", [str])
     # Height of a diagram embedded with the ``bpmn`` role, in CSS units.
-    app.add_config_value("bpmn_inline_height", "2.5em", "env", [str])
+    app.add_config_value("bpmn_inline_height", "1.85em", "env", [str])
     app.add_node(
         bpmn,
         html=(visit_bpmn_html, None),
