@@ -29,7 +29,17 @@ Modes:
 ``gif``, ``apng``, ``webp``
     An animated execution, optionally steered by a ``:scenario:`` TOML file.
 
-Only HTML builders render diagrams; other builders skip them (a caption is kept).
+Also provides a ``bpmn`` role for embedding a small diagram, such as a single
+task or event, inline in the body text. It is always rendered as a static SVG
+scaled to the height of the text line. The link text (``text <path>``) is the
+alt text:
+
+.. code-block:: md
+
+   Each step of the process is a {bpmn}`service task <diagrams/task.bpmn>`.
+
+Only HTML builders render diagrams; other builders skip them (a caption is kept,
+and an inline diagram is replaced by its alt text).
 """
 
 from __future__ import annotations
@@ -46,6 +56,8 @@ from sphinx.application import Sphinx
 from sphinx.errors import SphinxError
 from sphinx.util import logging
 from sphinx.util.docutils import SphinxDirective
+from sphinx.util.docutils import SphinxRole
+from sphinx.util.nodes import split_explicit_title
 
 logger = logging.getLogger(__name__)
 
@@ -118,6 +130,34 @@ class BpmnDirective(SphinxDirective):
         if node["align"]:
             figure["align"] = node["align"]
         return [figure]
+
+
+class BpmnRole(SphinxRole):
+    """Embed a small BPMN diagram inline in the text."""
+
+    def run(self) -> tuple[list[nodes.Node], list[nodes.system_message]]:
+        has_title, title, target = split_explicit_title(self.text)
+        rel, path = self.env.relfn2path(target)
+        if not Path(path).is_file():
+            msg = self.inliner.reporter.error(
+                f"BPMN file not found: {rel}", line=self.lineno
+            )
+            return [self.inliner.problematic(self.rawtext, self.rawtext, msg)], [msg]
+        self.env.note_dependency(rel)
+
+        alt = title if has_title else Path(path).stem.replace("-", " ").replace("_", " ")
+
+        node = bpmn()
+        node["source"] = path
+        node["mode"] = "svg"
+        node["inline"] = True
+        node["width"] = None
+        node["height"] = self.config.bpmn_inline_height
+        node["alt"] = alt
+        node["classes"] += ["bpmn-inline"]
+        # Shown instead of the image by builders that cannot render it.
+        node += nodes.Text(alt)
+        return [node], []
 
 
 def _run(app: Sphinx, args: list[str], stdin: str | None = None) -> str:
@@ -212,6 +252,8 @@ def visit_bpmn_html(self, node: bpmn) -> None:
         src = f"{self.builder.imgpath}/{name}"
         alt = node["alt"] or source.stem.replace("-", " ").replace("_", " ")
         style = _style(node)
+        if node.get("inline"):
+            style = f"{style};vertical-align:middle" if style else "vertical-align:middle"
         attrs = f' style="{style}"' if style else ""
         classes = " ".join(["bpmn-image", *node["classes"]])
         self.body.append(f'<img class="{classes}" src="{src}" alt="{alt}"{attrs} />')
@@ -219,13 +261,19 @@ def visit_bpmn_html(self, node: bpmn) -> None:
 
 
 def visit_bpmn_fallback(self, node: bpmn) -> None:
-    """Non-HTML builders: a diagram cannot be shown, skip it."""
-    raise nodes.SkipNode
+    """Non-HTML builders: a diagram cannot be shown, skip it.
+
+    An inline diagram keeps its alt text, which is its only child.
+    """
+    if not node.get("inline"):
+        raise nodes.SkipNode
 
 
 def setup(app: Sphinx) -> dict:
     app.add_config_value("bpmn_to_image", shutil.which("bpmn-to-image") or "bpmn-to-image", "env")
     app.add_config_value("bpmn_default_mode", "interactive", "env", [str])
+    # Height of a diagram embedded with the ``bpmn`` role, in CSS units.
+    app.add_config_value("bpmn_inline_height", "2.5em", "env", [str])
     app.add_node(
         bpmn,
         html=(visit_bpmn_html, None),
@@ -235,6 +283,7 @@ def setup(app: Sphinx) -> dict:
         texinfo=(visit_bpmn_fallback, None),
     )
     app.add_directive("bpmn", BpmnDirective)
+    app.add_role("bpmn", BpmnRole())
     app.connect("html-page-context", _html_page_context)
     app.connect("build-finished", _build_finished)
     return {"version": "0.1", "parallel_read_safe": True, "parallel_write_safe": False}
