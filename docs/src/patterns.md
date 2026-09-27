@@ -12,6 +12,8 @@ For this pattern, Plone needs only integration to start the process, usually thr
 ```{bpmn} diagrams/fire-and-forget.bpmn
 :mode: interactive
 :alt: Plone sends a request to a BPMN process, which performs work and completes without returning a message.
+:width: 80%
+:align: center
 ```
 
 ### TODO
@@ -29,6 +31,8 @@ A worker subscribed to its topic can then submit the update to Plone through its
 ```{bpmn} diagrams/complementary.bpmn
 :mode: interactive
 :alt: Plone sends a request to a BPMN process, which performs work and sends an update back to Plone.
+:width: 80%
+:align: center
 ```
 
 ### TODO
@@ -47,6 +51,8 @@ For this pattern, Plone retrieves the forms referenced by the deployed process f
 ```{bpmn} diagrams/standalone-embed.bpmn
 :mode: interactive
 :alt: A submitted contact form goes to administrator review, then either sends a reply email or ends as abandoned.
+:width: 80%
+:align: center
 ```
 
 ### TODO

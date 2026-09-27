@@ -1,5 +1,7 @@
 # BPMN with Plone
 
+**This documentation is still a draft.**
+
 This project documents how to use [BPMN 2.0](https://www.omg.org/spec/BPMN/) business process models with [Plone](https://plone.org/).
 
 BPMN stands for **Business Process Model and Notation**, an OMG standard.
@@ -54,6 +56,9 @@ For users, Plone is a tool to help them to complete their work. Activity-based w
 :caption: Try the token simulator: start a simulation, click the start event, then click enabled activities and sequence flows to advance the token through the process. Reset the simulation to try again.
 ```
 
+Use the `:align:` option to position a diagram within its available width.
+Set it to `left` (the default), `center`, or `right`.
+
 ## Why external process engine?
 
 When BPMN is used to model and orchestrate work performed mainly by users or systems outside Plone, it is natural for that process to be managed by a dedicated service: a BPMN engine. This separates the concerns of managing content (Plone) from managing work (BPMN), and makes it straightforward to integrate with systems other than Plone.
@@ -83,7 +88,8 @@ BPMN's basic activity types include {bpmn}`diagrams/user-task.bpmn` **User Tasks
 ```{bpmn} diagrams/activity-task-types.bpmn
 :mode: svg
 :alt: A BPMN process with a User Task, a Script Task, and a Service Task activity.
-:width: 100%
+:width: 80%
+:align: center
 :caption: The three basic BPMN activity types, a user task, a script task, and a service task.
 ```
 
@@ -92,7 +98,8 @@ The **external service task** pattern is the recommended approach for automating
 ```{bpmn} diagrams/scheduled-publication.bpmn
 :mode: interactive
 :alt: BPMN scheduled publication process with a message start event, a script task calculating the publication time, a timer event, and an external service task that publishes to Plone
-:width: 100%
+:width: 80%
+:align: center
 :caption: An external service task publishes content in Plone once its scheduled publication time is reached.
 ```
 

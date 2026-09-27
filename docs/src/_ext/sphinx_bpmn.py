@@ -29,6 +29,10 @@ Modes:
 ``gif``, ``apng``, ``webp``
     An animated execution, optionally steered by a ``:scenario:`` TOML file.
 
+The directive also accepts ``:align: left``, ``:align: center``, and
+``:align: right``. Alignment defaults to ``left`` and positions the diagram
+horizontally when it does not fill the available width.
+
 Also provides a ``bpmn`` role for embedding a small diagram, such as a single
 task or event, inline in the body text. It is always rendered as a static SVG
 scaled to the height of the text line. The link text (``text <path>``) is the
@@ -63,6 +67,7 @@ logger = logging.getLogger(__name__)
 
 STATIC_MODES = ("svg", "png", "gif", "apng", "webp")
 MODES = ("interactive", *STATIC_MODES)
+ALIGNMENTS = ("left", "center", "right")
 ASSET_NAME = "bpmn-viewer"
 
 
@@ -75,7 +80,7 @@ def _mode(argument: str) -> str:
 
 
 def _align(argument: str) -> str:
-    return directives.choice(argument, ("left", "center", "right"))
+    return directives.choice(argument, ALIGNMENTS)
 
 
 class BpmnDirective(SphinxDirective):
@@ -103,8 +108,9 @@ class BpmnDirective(SphinxDirective):
         node = bpmn()
         node["source"] = path
         node["mode"] = self.options.get("mode", self.config.bpmn_default_mode)
-        for key in ("width", "height", "align", "alt"):
+        for key in ("width", "height", "alt"):
             node[key] = self.options.get(key)
+        node["align"] = self.options.get("align", "left")
         node["classes"] += self.options.get("class", [])
         node["docname"] = self.env.docname
         node["index"] = self.env.temp_data.setdefault("bpmn_count", 0)
@@ -215,6 +221,15 @@ def _style(node: bpmn) -> str:
         parts.append(f"width:{node['width']}")
     if node["height"]:
         parts.append(f"height:{node['height']}")
+    if not node.get("inline"):
+        parts.append("display:block")
+        align = node.get("align", "left")
+        if align == "center":
+            parts.extend(("margin-left:auto", "margin-right:auto"))
+        elif align == "right":
+            parts.extend(("margin-left:auto", "margin-right:0"))
+        else:
+            parts.extend(("margin-left:0", "margin-right:auto"))
     return ";".join(parts)
 
 
