@@ -19,7 +19,7 @@
       <bpmn:incoming>Flow_0nsgwu2</bpmn:incoming>
       <bpmn:outgoing>Flow_0h3v6r4</bpmn:outgoing>
     </bpmn:scriptTask>
-    <bpmn:serviceTask id="Activity_1u7lz6c" name="Complete work">
+    <bpmn:serviceTask id="Activity_1u7lz6c" name="Complete work" camunda:type="external" camunda:topic="complete-work">
       <bpmn:incoming>Flow_0h3v6r4</bpmn:incoming>
       <bpmn:outgoing>Flow_14g6z4q</bpmn:outgoing>
     </bpmn:serviceTask>

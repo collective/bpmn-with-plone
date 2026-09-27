@@ -25,7 +25,7 @@
       <bpmn:outgoing>Flow_1t4fdfy</bpmn:outgoing>
       <bpmn:messageEventDefinition id="MessageEventDefinition_12ps4oa" />
     </bpmn:startEvent>
-    <bpmn:serviceTask id="Activity_1dkl0fz" name="Work">
+    <bpmn:serviceTask id="Activity_1dkl0fz" name="Work" camunda:type="external" camunda:topic="work">
       <bpmn:incoming>Flow_0jn16g6</bpmn:incoming>
       <bpmn:outgoing>Flow_0r5m9gz</bpmn:outgoing>
     </bpmn:serviceTask>

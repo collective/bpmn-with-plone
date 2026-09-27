@@ -31,7 +31,7 @@
       <bpmn:incoming>Flow_083izah</bpmn:incoming>
       <bpmn:outgoing>Flow_1lh4lok</bpmn:outgoing>
     </bpmn:scriptTask>
-    <bpmn:serviceTask id="Activity_16x1h4c" name="Publish">
+    <bpmn:serviceTask id="Activity_16x1h4c" name="Publish" camunda:type="external" camunda:topic="publish">
       <bpmn:incoming>Flow_0mm6xr4</bpmn:incoming>
       <bpmn:outgoing>Flow_1hk9iw0</bpmn:outgoing>
     </bpmn:serviceTask>

@@ -39,7 +39,8 @@ State diagram of Plone’s simple publication workflow, showing its three states
 ```{bpmn} diagrams/simple-publication.bpmn
 :mode: svg
 :alt: BPMN publication process with author and reviewer lanes, draft creation, review, and message flows to Plone CMS
-:width: 100%
+:width: 80%
+:align: center
 :caption: BPMN model of the publication process, with author and reviewer lanes and message flows to Plone CMS.
 ```
 ````
@@ -52,7 +53,8 @@ For users, Plone is a tool to help them to complete their work. Activity-based w
 ```{bpmn} diagrams/simple-publication.bpmn
 :mode: interactive
 :alt: BPMN publication process with author and reviewer lanes, draft creation, review, and message flows to Plone CMS
-:width: 100%
+:width: 80%
+:align: center
 :caption: Try the token simulator: start a simulation, click the start event, then click enabled activities and sequence flows to advance the token through the process. Reset the simulation to try again.
 ```
 

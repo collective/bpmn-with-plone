@@ -17,13 +17,13 @@
       <bpmn:outgoing>Flow_1t4fdfy</bpmn:outgoing>
       <bpmn:messageEventDefinition id="MessageEventDefinition_12ps4oa" />
     </bpmn:startEvent>
-    <bpmn:serviceTask id="Activity_1dkl0fz" name="Work">
+    <bpmn:serviceTask id="Activity_1dkl0fz" name="Work" camunda:type="external" camunda:topic="work">
       <bpmn:incoming>Flow_1t4fdfy</bpmn:incoming>
       <bpmn:outgoing>Flow_0r5m9gz</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:endEvent id="Event_022u0vw" name="Work completed">
       <bpmn:incoming>Flow_0r5m9gz</bpmn:incoming>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_072vjlx" />
+      <bpmn:messageEventDefinition id="MessageEventDefinition_072vjlx" camunda:type="external" camunda:topic="update" />
     </bpmn:endEvent>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">

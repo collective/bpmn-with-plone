@@ -4,7 +4,7 @@ This page describes common patterns for integrating Plone with an external BPMN 
 
 ## Fire and forget
 
-In the fire-and-forget pattern, Plone sends a request to start work and does not need a response when the process finishes.
+In this fire-and-forget pattern, Plone sends a request to start work and does not need a response when the process finishes.
 The diagram shows a message start event for Plone's request and a regular start event for work started independently; both paths converge before the service task.
 The process completes the work and ends without sending a message back to Plone.
 For this pattern, Plone needs only integration to start the process, usually through the engine REST API.
