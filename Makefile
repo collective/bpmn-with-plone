@@ -1,77 +1,110 @@
-# Minimal makefile for Sphinx documentation
+# Playground for BPMN with Plone: Operaton and an ephemeral Plone site generated
+# with cookieplone (collective.webhook as its only add-on), behind one proxy.
 #
-# Run inside `nix develop`, which provides sphinx, sphinx-autobuild and
-# bpmn-to-image.
+#   make install    build the devenv shell, generate the Plone project,
+#                   install it and create the Plone site
+#   make start      start Operaton, Plone and the proxy in the background
+#   make attach     follow process status and logs (Ctrl-C leaves them running)
+#   make tasks      run the operaton-tasks worker from tasks/ in the foreground
+#   make stop       stop the services
+#   make shell      enter the devenv shell
+#
+# The proxy is at http://localhost:8000 (in Codespaces, the forwarded port
+# 8000): Plone at / (login admin / admin), and Operaton at /operaton, e.g.
+# Cockpit at /operaton/app/cockpit/ (login demo / demo). Behind it, Plone is at
+# localhost:8080 and Operaton at localhost:8800. To start from scratch:
+# make clean install
+#
+# The plone-* targets need the devenv shell (uv and git) and are run by the
+# targets above; project name, package name and feature flags live in
+# cookieplone-answers.json.
 
-# You can set these variables from the command line, and also
-# from the environment for the first two.
-SPHINXOPTS    ?=
-SPHINXBUILD   ?= sphinx-build
-SPHINXAUTOBUILD ?= sphinx-autobuild
-SOURCEDIR     = docs
-BUILDDIR      = build
+ANSWERS ?= cookieplone-answers.json
+PROJECT ?= $(shell sed -n 's/^ *"project_slug": *"\(.*\)".*/\1/p' $(ANSWERS))
 
-# Address of the `watch` server; use HOST=0.0.0.0 to reach it from outside
-# a container or sandbox.
-HOST          ?= 127.0.0.1
-PORT          ?= 8000
+ADDON_REQUIREMENT ?= collective.webhook>=0.4.0
+ADDON_PACKAGE ?= collective.webhook
 
-# Agent skills installed by `make skills`.
-SKILLS_DIR    = .skills
-PLONE_DOC_STYLE_REPO ?= https://github.com/plone/plone-doc-style-skill
-PLONE_DOC_STYLE_REF  ?= main
+PORT ?= 8080
 
-# Put it first so that "make" without argument is like "make help".
+COOKIEPLONE ?= uvx cookieplone
+BACKEND := $(PROJECT)/backend
+
 .DEFAULT_GOAL := help
 
 .PHONY: help
-help:  ## Show this help
-	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
-	@echo
-	@echo "Project targets:"
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
-		awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
+help: ## This help message
+	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) \
+		| awk 'BEGIN {FS = ":.*?## "}; {printf "  %-14s %s\n", $$1, $$2}'
 
-.PHONY: watch
-watch:  ## Rebuild on changes and reload the browser (HOST, PORT)
-	$(SPHINXAUTOBUILD) \
-		--host "$(HOST)" --port "$(PORT)" \
-		--watch "$(SOURCEDIR)/_ext" \
-		--ignore "*.swp" --ignore "*~" \
-		"$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS) $(O)
+## Run from Codespaces or a terminal with devenv
 
-.PHONY: livehtml
-livehtml: watch  ## Alias for watch
+.PHONY: install
+install: ## Build the devenv shell and install Plone with its site
+	devenv shell -- $(MAKE) plone-install
 
-.PHONY: strict
-strict:  ## Build HTML, failing on warnings (as CI does)
-	$(SPHINXBUILD) -W --keep-going -b html "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS) $(O)
+.PHONY: start
+start: ## Start Operaton, Plone and the proxy in the background
+	devenv up -d
+
+.PHONY: attach
+attach: ## Follow process status and logs
+	devenv processes attach
+
+.PHONY: tasks
+tasks: ## Run the operaton-tasks worker (Ctrl-C to stop)
+	devenv shell -- operaton-tasks serve tasks/tasks.py
+
+.PHONY: stop
+stop: ## Stop the services
+	devenv processes down
+
+.PHONY: shell
+shell: ## Enter the devenv shell
+	devenv shell
 
 .PHONY: clean
-clean:  ## Remove the build directory
-	rm -rf "$(BUILDDIR)"
+clean: ## Remove the generated Plone project and local state
+	$(RM) -r $(PROJECT) tasks/.venv .devenv
 
-.PHONY: skills
-skills:  ## Install the plone-doc-style agent skill (Claude Code, Codex, opencode, ...), git-ignored
-	@if [ -d "$(SKILLS_DIR)/plone-doc-style-skill/.git" ]; then \
-		git -C "$(SKILLS_DIR)/plone-doc-style-skill" fetch --quiet --depth 1 origin "$(PLONE_DOC_STYLE_REF)" && \
-		git -C "$(SKILLS_DIR)/plone-doc-style-skill" checkout --quiet FETCH_HEAD; \
-	else \
-		mkdir -p "$(SKILLS_DIR)" && \
-		git clone --quiet --depth 1 --branch "$(PLONE_DOC_STYLE_REF)" \
-			"$(PLONE_DOC_STYLE_REPO)" "$(SKILLS_DIR)/plone-doc-style-skill"; \
-	fi
-	@# .agents/skills is read by most agents, .claude/skills by Claude Code.
-	@for dir in .agents/skills .claude/skills; do \
-		mkdir -p "$$dir" && \
-		ln -sfn "../../$(SKILLS_DIR)/plone-doc-style-skill/skills/author" "$$dir/plone-doc-style"; \
-	done
-	@echo "Installed plone-doc-style into .agents/skills and .claude/skills"
+## Run inside the devenv shell
 
-# Without this, the catch-all rule below would match the Makefile itself.
-Makefile: ;
+# Cookieplone creates $(PROJECT)/ and initializes git in it.
+$(BACKEND)/pyproject.toml: $(ANSWERS)
+	$(COOKIEPLONE) project --no-input --answers-file $(ANSWERS)
+	@test -f $@ || { echo "cookieplone did not generate $@"; exit 1; }
 
-# Catch-all target: route all unknown targets to Sphinx using the new
-# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-%: Makefile
-	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+# Add the add-on to the backend. The ZCML include is explicit because
+# collective.webhook only registers a z3c.autoinclude entry point.
+# Idempotent, so it is safe to run on an already generated project.
+.PHONY: addon
+addon: $(BACKEND)/pyproject.toml
+	grep -q '"$(ADDON_PACKAGE)' $(BACKEND)/pyproject.toml \
+		|| sed -i 's/^\(    "plone.api",\)$$/\1\n    "$(ADDON_REQUIREMENT)",/' $(BACKEND)/pyproject.toml
+	grep -q '"$(ADDON_REQUIREMENT)"' $(BACKEND)/pyproject.toml \
+		|| { echo "could not add $(ADDON_REQUIREMENT) to $(BACKEND)/pyproject.toml"; exit 1; }
+	grep -q '$(ADDON_PACKAGE)' $(BACKEND)/instance.yaml \
+		|| sed -i "s/^\( *zcml_package_includes: '.*\)'/\1, $(ADDON_PACKAGE)'/" $(BACKEND)/instance.yaml
+	grep -q "zcml_package_includes: '.*, $(ADDON_PACKAGE)'" $(BACKEND)/instance.yaml \
+		|| { echo "could not add $(ADDON_PACKAGE) to $(BACKEND)/instance.yaml"; exit 1; }
+
+# Set the port in instance.yaml, which the backend Makefile turns into
+# zope.ini (listen = localhost:$(PORT)). The file is only touched when the
+# value changes, so the instance config is regenerated only then.
+.PHONY: port
+port: addon
+	@grep -q "^ *wsgi_listen: 'localhost:$(PORT)'$$" $(BACKEND)/instance.yaml \
+		|| { sed -i '/^ *wsgi_listen:/d' $(BACKEND)/instance.yaml \
+		&& { [ -z "$$(tail -c1 $(BACKEND)/instance.yaml)" ] || echo >> $(BACKEND)/instance.yaml; } \
+		&& echo "    wsgi_listen: 'localhost:$(PORT)'" >> $(BACKEND)/instance.yaml; }
+
+# The project's backend-install also creates the Plone site (kept if it exists),
+# and the task worker's virtualenv is synced here too, to be ready for start.
+.PHONY: plone-install
+plone-install: port
+	$(MAKE) -C $(PROJECT) backend-install
+	UV_PROJECT_ENVIRONMENT=$(CURDIR)/tasks/.venv uv sync --project tasks
+
+.PHONY: plone-serve
+plone-serve: plone-install
+	$(MAKE) -C $(PROJECT) backend-start

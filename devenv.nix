@@ -15,9 +15,10 @@ let
   tasksPort = 8081;
 
   # Rewrites requests to Plone into its VirtualHostMonster, so that Plone
-  # generates URLs for the public address, and tells Operaton the public scheme
-  # and port (Codespaces terminates https on 443). VHM_BASE, PUBLIC_SCHEME and
-  # PUBLIC_PORT are set by the proxy process below.
+  # generates URLs for the public address, and tells Operaton the public
+  # scheme, host and port. Codespaces terminates https on 443 and sends Host:
+  # localhost, so the public host cannot be read from the request. VHM_BASE and
+  # PUBLIC_{SCHEME,HOST,PORT} are set by the proxy process below.
   caddyfile = pkgs.writeText "Caddyfile" ''
     {
       admin off
@@ -28,6 +29,7 @@ let
       handle @operaton {
         reverse_proxy localhost:${toString operatonPort} {
           header_up X-Forwarded-Proto {$PUBLIC_SCHEME}
+          header_up X-Forwarded-Host {$PUBLIC_HOST}
           header_up X-Forwarded-Port {$PUBLIC_PORT}
         }
       }
@@ -59,8 +61,8 @@ in
     # Only ping.bpmn: the other diagrams are illustrations for the docs, and
     # Operaton refuses to deploy them (no history time to live, missing refs).
     deployment = lib.fileset.toSource {
-      root = ../docs/diagrams;
-      fileset = ../docs/diagrams/ping.bpmn;
+      root = ./docs/src/diagrams;
+      fileset = ./docs/src/diagrams/ping.bpmn;
     };
     forwardHeadersStrategy = "native";
     package = devenv-module-operaton.packages.${pkgs.stdenv.hostPlatform.system}.default;
@@ -77,10 +79,12 @@ in
   processes.proxy.exec = ''
     if [ -n "''${CODESPACE_NAME:-}" ]; then
       export PUBLIC_SCHEME=https
+      export PUBLIC_HOST="''${CODESPACE_NAME}-${toString proxyPort}.''${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
       export PUBLIC_PORT=443
-      export VHM_BASE="/VirtualHostBase/https/''${CODESPACE_NAME}-${toString proxyPort}.''${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}:443/Plone/VirtualHostRoot"
+      export VHM_BASE="/VirtualHostBase/https/''${PUBLIC_HOST}:443/Plone/VirtualHostRoot"
     else
       export PUBLIC_SCHEME=http
+      export PUBLIC_HOST=localhost
       export PUBLIC_PORT=${toString proxyPort}
       export VHM_BASE="/VirtualHostBase/http/localhost:${toString proxyPort}/Plone/VirtualHostRoot"
     fi

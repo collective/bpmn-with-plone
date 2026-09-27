@@ -2,8 +2,8 @@
   "name": "BPMN with Plone",
   "image": "ghcr.io/cachix/devenv/devcontainer:v2.4.0",
   "overrideCommand": false,
-  "updateContentCommand": "make -C backend install",
-  "postStartCommand": "make -C backend start",
+  "updateContentCommand": "make install",
+  "postStartCommand": "make start",
   "forwardPorts": [8000],
   "portsAttributes": {
     "8000": {
@@ -24,7 +24,7 @@
         "ms-python.vscode-pylance"
       ],
       "settings": {
-        "python.defaultInterpreterPath": "${containerWorkspaceFolder}/backend/tasks/.venv/bin/python"
+        "python.defaultInterpreterPath": "${containerWorkspaceFolder}/tasks/.venv/bin/python"
       }
     }
   }

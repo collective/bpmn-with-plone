@@ -26,10 +26,10 @@ jobs:
             experimental-features = nix-command flakes
 
       - name: Check flake
-        run: nix flake check -L
+        run: nix flake check -L ./docs
 
       - name: Build documentation
-        run: nix build -L .#docs
+        run: nix build -L ./docs#docs
 
       # `result` is a symlink into the read-only Nix store.
       - name: Prepare site

@@ -1,9 +1,14 @@
-/build/
-/result
+# devenv, and what `make install` generates: the Plone site and the worker's
+# virtual environment
+.devenv/
+.devenv.flake.nix
+/site/
+/tasks/.venv/
+
 .venv/
 __pycache__/
 
-# Agent skills installed with `make skills`
+# Agent skills installed with `make skills` in docs/
 /.skills/
 /.agents/skills/plone-doc-style
 /.claude/skills/plone-doc-style

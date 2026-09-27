@@ -1,5 +1,0 @@
-.devenv/
-.devenv.flake.nix
-site/
-tasks/.venv/
-__pycache__/

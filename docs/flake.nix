@@ -23,7 +23,7 @@
     };
 
     # Renders BPMN diagrams (and the token simulation embed) for the Sphinx
-    # extension in docs/_ext/sphinx_bpmn.py.
+    # extension in src/_ext/sphinx_bpmn.py.
     bpmn-to-image = {
       url = "github:datakurre/bpmn-to-image";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -83,7 +83,7 @@
 
             src = lib.fileset.toSource {
               root = ./.;
-              fileset = ./docs;
+              fileset = ./src;
             };
 
             nativeBuildInputs = [
@@ -96,7 +96,7 @@
             buildPhase = ''
               runHook preBuild
               # Fail on warnings, so broken references do not get published.
-              sphinx-build -W --keep-going -b html docs build
+              sphinx-build -W --keep-going -b html src build
               runHook postBuild
             '';
 
@@ -124,7 +124,7 @@
                   bpmn-to-image.packages.${system}.default
                 ];
                 text = ''
-                  exec sphinx-autobuild --host 0.0.0.0 --watch docs/_ext docs build/html "$@"
+                  exec sphinx-autobuild --host 0.0.0.0 --watch src/_ext src build/html "$@"
                 '';
               }
             );

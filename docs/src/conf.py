@@ -49,7 +49,7 @@ html_theme_options = {
     "article_header_start": ["toggle-primary-sidebar"],
     "logo": {"text": project},
     "navigation_with_keys": True,
-    "path_to_docs": "docs",
+    "path_to_docs": "docs/src",
     "repository_branch": "main",
     "show_toc_level": 2,
 }
